@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: alx-backend-security
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn alx_backend_security.wsgi:application
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: alx_backend_security.settings
+      - key: CELERY_BROKER_URL
+        value: amqp://guest:guest@localhost:5672//  # replace if using cloud RabbitMQ
+      - key: SECRET_KEY
+        value: your-secret-key-here
+  - type: worker
+    name: celery-worker
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A alx_backend_security worker --loglevel=info
+  - type: worker
+    name: celery-beat
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A alx_backend_security beat --loglevel=info
